@@ -1,0 +1,33 @@
+R1-ISP — EXTRACTO DE CONFIGURACIÓN REAL VERIFICADA
+Fuente: salida de consola Cisco 7200 proporcionada por el estudiante.
+Se omiten opciones por defecto, banners y datos no necesarios.
+
+hostname R1-ISP
+no ip domain-lookup
+!
+interface FastEthernet0/0
+ description ENLACE-FORTIGATE-WAN
+ ip address 198.51.100.1 255.255.255.252
+ no shutdown
+!
+interface FastEthernet1/0
+ description CLIENTE-REMOTO-VPN
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+!
+ip route 10.15.71.0 255.255.255.128 198.51.100.2
+ip route 10.15.71.128 255.255.255.248 198.51.100.2
+ip route 10.15.71.136 255.255.255.248 198.51.100.2
+
+VERIFICACIONES OBSERVADAS:
+FastEthernet0/0  198.51.100.1  up/up
+FastEthernet1/0  203.0.113.1   up/up
+S 10.15.71.0/25    via 198.51.100.2
+S 10.15.71.128/29  via 198.51.100.2
+S 10.15.71.136/29  via 198.51.100.2
+
+Para obtener el registro íntegro en R1:
+terminal length 0
+show running-config
+show ip interface brief
+show ip route

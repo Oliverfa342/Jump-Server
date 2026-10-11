@@ -1,0 +1,38 @@
+# Direccionamiento y puertos — Jump Server
+
+| Conexión / red | Dirección | Puerto / interfaz |
+|---|---|---|
+| ISP → FortiGate | 198.51.100.1/30 → 198.51.100.2/30 | R1 Fa0/0 ↔ Forti port1 |
+| Cliente remoto → ISP | 203.0.113.2/30 → 203.0.113.1/30 | Cliente externo ↔ R1 Fa1/0 (cliente no validado) |
+| FortiGate → switch | VLAN 10,20,30 | Forti port2 ↔ SW1 Gi0/0 trunk |
+| SW1 → USER-PC-1 | VLAN 10, 10.15.71.0/25 | Gi0/1 |
+| SW1 → USER-PC-3 | VLAN 10, 10.15.71.0/25 | Gi0/2 |
+| SW1 → JUMP-SRV-01 | VLAN 20, 10.15.71.130/29 | Gi0/3 ↔ Cloud1 VMnet3 |
+| SW1 → WEB-SRV-1 | VLAN 30, 10.15.71.138/29 (previsto) | Gi1/0 |
+| Administración Forti | 192.168.200.2/24 | port3 ↔ Cloud2 VMnet2 |
+
+## Direcciones de gateway
+
+- VLAN 10: FortiGate 10.15.71.1/25
+- VLAN 20: FortiGate 10.15.71.129/29
+- VLAN 30: FortiGate 10.15.71.137/29
+- WAN: R1 198.51.100.1/30
+- VPN pool: 10.15.72.10–10.15.72.30
+
+## DHCP de usuarios
+
+- Pool real en respaldo: 10.15.71.2–10.15.71.126
+- Máscara: 255.255.255.128
+- DNS: 10.15.71.130
+- Gateway: 10.15.71.1
+- USER-PC-1: 10.15.71.2/25 observada
+
+## Puertos de firewall (configurados)
+
+- VLAN 10 → Jump: TCP 443 (HTTPS), DNS
+- VLAN 10 → Web: DENY directo
+- Jump → Web: TCP 443, 22 y 3389
+- VPN → Jump: HTTPS y DNS; demás servicios denegados por regla
+- Acceso administrativo al FortiGate: GUI por HTTP en 192.168.200.2 (solo laboratorio aislado)
+
+Los puertos permitidos en la política no demuestran que una aplicación esté escuchando.

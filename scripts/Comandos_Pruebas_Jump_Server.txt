@@ -1,0 +1,55 @@
+COMANDOS DE PRUEBAS — JUMP SERVER / FORTIGATE / GNS3
+Documentación técnica. Ejecutar en el equipo indicado.
+
+=== R1-ISP (Cisco 7200) ===
+enable
+terminal length 0
+show running-config
+show ip interface brief
+show ip route
+
+=== SW1 (Cisco IOSvL2) ===
+enable
+terminal length 0
+show running-config
+show vlan brief
+show interfaces trunk
+show interfaces status
+show spanning-tree vlan 30
+show port-security interface GigabitEthernet0/1
+
+=== USER-PC-1 (Alpine Linux, VLAN 10) ===
+ip addr show eth0
+ip route
+ping -c 4 10.15.71.1
+wget -T 5 --no-check-certificate -S -O /dev/null https://10.15.71.130/RDWeb/
+# Resultado observado: HTTP/1.1 302 Found y posteriormente HTTP/1.1 200 OK.
+
+# Pruebas de SSH (el fallo no confirma por sí solo que FortiGate lo bloqueó):
+busybox nc -z -w 5 10.15.71.130 22
+echo $?
+
+=== WINDOWS SERVER 2022 (PowerShell) ===
+ipconfig /all
+route print
+Test-NetConnection 10.15.71.138 -Port 443
+Test-NetConnection 10.15.71.138 -Port 22
+Test-NetConnection 10.15.71.138 -Port 3389
+# Resultado observado en 443 y 22: TcpTestSucceeded = False.
+
+=== WEB-SRV-1 (Alpine Linux, VLAN 30) ===
+ip addr show eth0
+ip route
+ping -c 3 10.15.71.137
+ip neigh show 10.15.71.137
+netstat -lnt
+# Resultado reportado: sin respuesta al gateway; ARP FAILED.
+
+=== FORTIGATE (SOLO GUI, no configurar por CLI) ===
+Network > Interfaces
+Network > Static Routes
+Policy & Objects > Firewall Policy
+VPN > IPsec Tunnels
+Log & Report > Forward Traffic
+# Capturar la interfaz, política y estado que realmente se observen.
+# La captura del túnel VPN-JUMP muestra 'Inactive'.
